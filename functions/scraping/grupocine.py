@@ -1,5 +1,4 @@
-import scraping_helper
-
+from functions.scraping import scraping_helper
 URL = "https://www.grupocine.com.uy/SIGE_CN/servlet/com.sigecn.comprar"
 SELECTOR_CSS = "select#vPELICULAID option:not([selected])"
 
