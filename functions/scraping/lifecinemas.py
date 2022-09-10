@@ -75,10 +75,12 @@ def get_links():
         lista_completa_de_datos.append(dict)
 
     #json_object = json.dumps(lista_completa_de_datos, indent=4)
-    with open("../../database/movies.json", "w") as json_file:
+    with open("/database/movies.json", "w+") as json_file:
         json.dump(lista_completa_de_datos, json_file)
     #return lista_completa_de_datos
-def download_image(url, titulo, save_path="/static/movie_images/"):
+def download_image(url, titulo, save_path="static/movie_images/"):
+
     r = requests.get(url, stream=True)
-    with open(f'{save_path}{titulo}.png', 'wb') as f:
+    print(r.status_code)
+    with open(f'{save_path}{titulo}.png', 'w+b') as f:
         shutil.copyfileobj(r.raw, f)
