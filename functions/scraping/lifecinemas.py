@@ -82,5 +82,3 @@ def download_image(url, titulo, save_path="/static/movie_images/"):
     r = requests.get(url, stream=True)
     with open(f'{save_path}{titulo}.png', 'wb') as f:
         shutil.copyfileobj(r.raw, f)
-
-get_links()
