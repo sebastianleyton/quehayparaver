@@ -15,7 +15,7 @@ app = Flask(__name__)
 def hello_world():
     # pelis_grupocine = grupocine.get_data()
     # pelis_lifecinema = lifecinemas.get_links()
-    json_exists = os.path.exists('database/movie.json')
+    json_exists = os.path.exists('database/movies.json')
     if not json_exists:
         get_links()
 
