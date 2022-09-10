@@ -41,8 +41,11 @@ def get_links():
         print("Cargando URL...")
         html = bs4.BeautifulSoup(requests.get(movie_url_full).text, features="html.parser")
         print("URL Cargada.")
-        movie_full = html.select(SELECTOR_CSS_MOVIE)[0]
-
+        try:
+            movie_full = html.select(SELECTOR_CSS_MOVIE)[0]
+        except:
+            print(f"Problema con el link: {movie_url}")
+            continue
 
         # Obtener titulo
         selector_titulo = 'div.title-cont-1 h2'
@@ -79,3 +82,5 @@ def download_image(url, titulo, save_path="../../static/movie_images/"):
     r = requests.get(url, stream=True)
     with open(f'{save_path}{titulo}.png', 'wb') as f:
         shutil.copyfileobj(r.raw, f)
+
+get_links()
