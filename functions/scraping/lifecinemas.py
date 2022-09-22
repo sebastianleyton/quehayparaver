@@ -1,86 +1,87 @@
+import os
 import shutil
 import json
 import bs4
 import requests
+from selenium.common import NoSuchElementException
+
+from definitions import  MOVIE_IMAGES_PATH, JSON_PATH
+from scraping_helper import Scraper
 
 URL = "https://lifecinemas.com.uy/pelicula/cartelera"
 SELECTOR_CSS_MOVIE_LINKS = "#ultimos_estrenos .movie-container a"
 URL_BASE = "https://lifecinemas.com.uy"
-SELECTOR_CSS_MOVIE = ".movie-sucursal"
+SELECTOR_FULL_MOVIE = ".movie-sucursal"
+
 
 def get_links():
-    html = bs4.BeautifulSoup(requests.get(URL).text, features="html.parser")
-    #print(html)
+    nav = Scraper()
 
-    # Listar todos los titulos en formato de objeto bs4
-    movies_elements = html.select(SELECTOR_CSS_MOVIE_LINKS)
-    #print(movies_elements)
+    # Cargar URL
+    nav.cargar_sitio(URL)
 
+    # Guardar links de pelis
+    movies_links_str = nav.extraer_url_de_lista(SELECTOR_CSS_MOVIE_LINKS)
+    # prit(movies_elements)
 
-    #Pasar a la lista de bs4 a lista de strings
-    movies_links_str = []
-    for movie in movies_elements:
-        movies_links_str.append(movie['href'])
-
-    # la misma lista usando list comprehension
-    # movies_list_str = [movie.text for movie in movies_list_bs]
-    #print(movies_links_str)
-    # return movies_list_str
+    # Inicializar lista final de datos
     lista_completa_de_datos = []
 
+    # Inicar loop por cada link de peli
     contador = 0
     for movie_url in movies_links_str:
         contador += 1
         print(f"Iterando lista: {contador} de {len(movies_links_str)}")
-        movie_url_full = URL_BASE + movie_url
-        print(f"Trabajando con: {movie_url_full}")
         if "/festival/" in movie_url:
             print("Ignorando url...")
             continue
-        #print(movie_url_full)
-        print("Cargando URL...")
-        html = bs4.BeautifulSoup(requests.get(movie_url_full).text, features="html.parser")
-        print("URL Cargada.")
+
+
+
+        nav.cargar_sitio(movie_url)
+
+
         try:
-            movie_full = html.select(SELECTOR_CSS_MOVIE)[0]
-        except:
-            print(f"Problema con el link: {movie_url}")
+            # Obtener titulo
+            selector_titulo = SELECTOR_FULL_MOVIE + ' div.title-cont-2 h2 a'
+            print(selector_titulo)
+            titulo = nav.extraer_texto(selector_titulo)
+        except NoSuchElementException as e:
+            print(f"Excepcion al buscar titulo: {e}")
             continue
 
-        # Obtener titulo
-        selector_titulo = 'div.title-cont-1 h2'
 
-        titulo = movie_full.select(selector_titulo)[0].text
+        # Crear nombre de imagen reemplazando los simbolos invalidos en windows por su equivalente textual
+        imagen = titulo
         if '?' in titulo:
-            titulo = titulo.replace('?', 'SIGNODEPREGUNTA')
+            imagen = imagen.replace('?', 'SIGNODEPREGUNTA')
         if ':' in titulo:
-            titulo = titulo.replace(':', 'DOSPUNTOS')
-        print(f"Titulo scrapeado: {titulo}")
+            imagen = imagen.replace(':', 'DOSPUNTOS')
 
         # Obtener descripcion
-        selector_descripcion = 'div p'
-        descripcion = movie_full.select(selector_descripcion)[0].text
-        print(f"Descripcion scrapeada: {descripcion}")
-
+        selector_descripcion = SELECTOR_FULL_MOVIE + ' div p'
+        descripcion = nav.extraer_texto(selector_descripcion)
 
         # Obtener imagen url
-        selector_imagen_url = 'div.img-movie a img'
-        imagen_url = 'https:' + movie_full.select(selector_imagen_url)[0]['src']
-        print(f"Imagen link scrapeado: {imagen_url}")
+        selector_imagen_url = SELECTOR_FULL_MOVIE + ' div.img-movie a img'
+        imagen_url = nav.extraer_atributo_generico(selector_imagen_url, 'src')
 
         download_image(imagen_url, titulo)
 
-        #TODO: Guardar en el diccionario el titulo de la imagen tambien para luego no tener problemas al reemplazar el signo de pregunta en el nombre
-        dict = {"titulo": titulo, "descripcion": descripcion}
+        dict = {"titulo": titulo, "descripcion": descripcion, "imagen": imagen}
         lista_completa_de_datos.append(dict)
 
-    #json_object = json.dumps(lista_completa_de_datos, indent=4)
-    with open("database/movies.json", "w+") as json_file:
+    nav.cerrar_navegador()
+    # json_object = json.dumps(lista_completa_de_datos, indent=4)
+    with open(os.path.join(JSON_PATH), "w+") as json_file:
         json.dump(lista_completa_de_datos, json_file)
-    #return lista_completa_de_datos
-def download_image(url, titulo, save_path="static/movie_images/"):
+    # return lista_completa_de_datos
 
+
+def download_image(url, titulo, save_path=os.path.join(MOVIE_IMAGES_PATH)):
     r = requests.get(url, stream=True)
     print(r.status_code)
-    with open(f'{save_path}{titulo}.png', 'w+b') as f:
+    filename = os.path.join(save_path, f'{titulo}.png')
+    print(filename)
+    with open(filename, 'w+b') as f:
         shutil.copyfileobj(r.raw, f)
