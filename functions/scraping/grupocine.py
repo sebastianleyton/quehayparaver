@@ -85,6 +85,3 @@ def download_image(url, titulo, save_path=os.path.join(MOVIE_IMAGES_PATH)):
     print(filename)
     with open(filename, 'w+b') as f:
         shutil.copyfileobj(r.raw, f)
-
-
-get_links()
