@@ -12,7 +12,7 @@ URL = "https://lifecinemas.com.uy/pelicula/cartelera"
 SELECTOR_CSS_MOVIE_LINKS = "#ultimos_estrenos .movie-container a"
 URL_BASE = "https://lifecinemas.com.uy"
 SELECTOR_FULL_MOVIE = ".movie-sucursal"
-
+JSON_NAME = 'life.json'
 
 def get_links():
     nav = Scraper()
@@ -73,7 +73,7 @@ def get_links():
 
     nav.cerrar_navegador()
     # json_object = json.dumps(lista_completa_de_datos, indent=4)
-    with open(os.path.join(JSON_PATH), "w+") as json_file:
+    with open(os.path.join(JSON_PATH, JSON_NAME), "w+") as json_file:
         json.dump(lista_completa_de_datos, json_file)
     # return lista_completa_de_datos
 
