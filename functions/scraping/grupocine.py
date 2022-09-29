@@ -6,7 +6,6 @@ from selenium.common import NoSuchElementException
 from definitions import MOVIE_IMAGES_PATH, JSON_PATH
 from scraping_helper import Scraper
 
-
 URL = "https://www.grupocine.com.uy/SIGE_CN/servlet/com.sigecn.cartelera"
 SELECTOR_CSS_MOVIE_LINKS = "#GridpeliculasContainerTbl a"
 URL_BASE = "https://www.grupocine.com.uy"
@@ -54,6 +53,7 @@ def get_links():
 
         # Crear nombre de imagen reemplazando los simbolos invalidos en windows por su equivalente textual
         imagen = titulo
+
         if '?' in titulo:
             imagen = imagen.replace('?', 'SIGNODEPREGUNTA')
         if ':' in titulo:
@@ -63,11 +63,12 @@ def get_links():
         descripcion = nav.extraer_texto(SELECTOR_DESCRIPTION)
 
         # Obtener imagen url
-        #SELECTOR_IMAGEN_URL = '#TABLEPELICULACONTAINER img'
+        # SELECTOR_IMAGEN_URL = '#TABLEPELICULACONTAINER img'
 
         imagen_url = nav.extraer_atributo_generico(SELECTOR_IMAGEN_URL, 'src')
 
-        download_image(imagen_url, titulo)
+        download_image(imagen_url, imagen)
+        # TODO: Expandir el json para guardar
         dict = {"titulo": titulo, "descripcion": descripcion, "imagen": imagen}
         lista_completa_de_datos.append(dict)
     #
@@ -78,10 +79,10 @@ def get_links():
     # return lista_completa_de_datos
 
 
-def download_image(url, titulo, save_path=os.path.join(MOVIE_IMAGES_PATH)):
+def download_image(url, imagen, save_path=os.path.join(MOVIE_IMAGES_PATH)):
     r = requests.get(url, stream=True)
     print(r.status_code)
-    filename = os.path.join(save_path, f'{titulo}.png')
+    filename = os.path.join(save_path, f'{imagen}.png')
     print(filename)
     with open(filename, 'w+b') as f:
         shutil.copyfileobj(r.raw, f)
