@@ -79,3 +79,4 @@ class Scraper:
 
     def cerrar_navegador(self):
         self.chrome.close()
+
