@@ -65,7 +65,10 @@ class DBConnection:
                 'updated_date) values (?, ?, ?, ?, ?, ?, ? ,?, ?) '
         self.execute(query, tpl)
 
-
+class CinemeNames:
+    grupocine = 'Cine Grupocine'
+    lifecinema = 'Cine Life'
+    moviecinema = 'Cine Movie'
 def create_db_from_scratch():
     conn = DBConnection(DB_PATH)
     columns = 'id INTEGER PRIMARY KEY AUTOINCREMENT, title, description, duration, genre, address, cinema, ' \
@@ -75,7 +78,8 @@ def create_db_from_scratch():
 
 def test_db_functions():
     db = DBConnection(DB_PATH)
-    db.insert_movie('Spiderman 3', 'Gran peli gran', '59', 'Accion', 'Complejo Ejido', 'Grupocine', 'asdasd')
+    db.insert_movie('Spiderman 1', 'El hombre araña nace, muere el tio Ben', '131', 'Accion', 'Complejo Ejido 123', 'Grupocine', 'test_image1')
+    db.insert_movie('Spiderman 2', 'El doctor octopus nace, muere la tía May', '147', 'Accion', 'Complejo Ejido 123', 'Lifecinema', 'test_image2')
+    db.insert_movie('Spiderman 3', 'El hombre de arena nace, muere Harry', '121', 'Accion', 'Complejo Ejido 123', 'Cinemovie', 'test_image3')
     all_data = db.get_all_movies()
     print(all_data)
-

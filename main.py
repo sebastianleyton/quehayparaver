@@ -1,9 +1,7 @@
 import os.path
 from flask import Flask, render_template
-from definitions import JSON_PATH
-import json
-import ast
-
+from definitions import JSON_PATH, DB_PATH
+from functions.dal import db
 #from functions.scraping.lifecinemas import get_links
 
 # from functions.scraping import grupocine
@@ -19,17 +17,15 @@ def hello_world():
     if not json_exists:
         pelis_lifecinema = '[]'
     else:
-        pelis_lifecinema = cargar_json_como_lista_dictionarios(JSON_PATH)
+        pelis_lifecinema = get_all_movies()
 
     return render_template('index.html', pelis_lifecinema=pelis_lifecinema)
     # return render_template('index.html')
 
-def cargar_json_como_lista_dictionarios(path):
-    with open(path, "r") as json_file:
-        contenido_del_archivo = json_file.read()
-    contenido_del_archivo = ast.literal_eval(contenido_del_archivo)
-    return contenido_del_archivo
-
+def get_all_movies():
+    db_conn = db.DBConnection(DB_PATH)
+    movies = db_conn.get_all_movies()
+    return movies
 
 # def arreglar_caracteres_en_titulos(lista):
 #     print(lista)

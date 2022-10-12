@@ -74,6 +74,9 @@ def get_links():
     #
     nav.cerrar_navegador()
     # json_object = json.dumps(lista_completa_de_datos, indent=4)
+
+    # TODO: Scrapear los campos nuevos title, description, duration, genre, address, cinema, image_name
+    # TODO: Guardar la información en la base de datos
     with open(os.path.join(JSON_PATH, JSON_NAME), "w+") as json_file:
         json.dump(lista_completa_de_datos, json_file)
     # return lista_completa_de_datos

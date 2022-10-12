@@ -61,12 +61,18 @@
 
 											<article class="style">
 												<span class="image">
-													<img src="static/movie_images/{{peli['imagen']}}.png" alt="" />
+													<img src="static/movie_images/{{peli['image_name']}}.png" alt="" />
 												</span>
 												<a href="generic.html">
-													<h2> {{ peli['titulo'] }}</h2>
+													<h2> {{ peli['title'] }}</h2>
 													<div class="content">
-														<p> Descripcion: {{ peli['descripcion'] }}  </p>
+														<p> Descripcion: {{ peli['description'] }}  </p>
+														<br>
+														<p> Duración: {{ peli['duration'] }}  </p>
+														<br>
+														<p> Género: {{ peli['genre'] }}  </p>
+														<br>
+														<p> Dirección: {{ peli['address'] }}  </p>
 														<br>
 													</div>
 												</a>

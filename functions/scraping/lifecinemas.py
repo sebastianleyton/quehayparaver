@@ -7,6 +7,7 @@ from selenium.common import NoSuchElementException
 
 from definitions import  MOVIE_IMAGES_PATH, JSON_PATH
 from scraping_helper import Scraper
+from functions.dal import db
 
 URL = "https://lifecinemas.com.uy/pelicula/cartelera"
 SELECTOR_CSS_MOVIE_LINKS = "#ultimos_estrenos .movie-container a"
@@ -68,6 +69,8 @@ def get_links():
 
         download_image(imagen_url, titulo)
 
+        # TODO: Scrapear los campos nuevos title, description, duration, genre, address, cinema, image_name
+        # TODO: Guardar la información en la base de datos
         dict = {"titulo": titulo, "descripcion": descripcion, "imagen": imagen}
         lista_completa_de_datos.append(dict)
 
@@ -76,7 +79,6 @@ def get_links():
     with open(os.path.join(JSON_PATH, JSON_NAME), "w+") as json_file:
         json.dump(lista_completa_de_datos, json_file)
     # return lista_completa_de_datos
-
 
 def download_image(url, titulo, save_path=os.path.join(MOVIE_IMAGES_PATH)):
     r = requests.get(url, stream=True)
