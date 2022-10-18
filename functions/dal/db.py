@@ -58,11 +58,11 @@ class DBConnection:
         result = self.query(query, title)
         return result
 
-    def insert_movie(self, title, description, duration, genre, address, cinema, image_name):
+    def insert_movie(self, title, description, duration, genre, address, cinema, image_name, url):
         timestamp = datetime.date.today()
-        tpl = (title, description, duration, genre, address, cinema, image_name, timestamp, timestamp)
-        query = 'insert into movies (title, description, duration, genre, address, cinema, image_name, created_date, ' \
-                'updated_date) values (?, ?, ?, ?, ?, ?, ? ,?, ?) '
+        tpl = (title, description, duration, genre, address, cinema, image_name, url, timestamp, timestamp)
+        query = 'insert into movies (title, description, duration, genre, address, cinema, image_name, movie_url, created_date, ' \
+                'updated_date) values (?, ?, ?, ?, ?, ?, ? ,?, ?, ?) '
         self.execute(query, tpl)
 
 class CinemeNames:
@@ -72,7 +72,7 @@ class CinemeNames:
 def create_db_from_scratch():
     conn = DBConnection(DB_PATH)
     columns = 'id INTEGER PRIMARY KEY AUTOINCREMENT, title, description, duration, genre, address, cinema, ' \
-              'image_name, created_date, updated_date '
+              'image_name, movie_url, created_date, updated_date '
     query = f'CREATE TABLE movies ({columns})'
     conn.execute(query)
 
@@ -82,4 +82,3 @@ def test_db_functions():
     db.insert_movie('Spiderman 2', 'El doctor octopus nace, muere la tía May', '147', 'Accion', 'Complejo Ejido 123', 'Lifecinema', 'test_image2')
     db.insert_movie('Spiderman 3', 'El hombre de arena nace, muere Harry', '121', 'Accion', 'Complejo Ejido 123', 'Cinemovie', 'test_image3')
     all_data = db.get_all_movies()
-    print(all_data)

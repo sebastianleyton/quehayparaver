@@ -2,26 +2,48 @@ import os
 import shutil
 import json
 import requests
+import uuid
 from selenium.common import NoSuchElementException
-from definitions import MOVIE_IMAGES_PATH, JSON_PATH
+from definitions import MOVIE_IMAGES_PATH, JSON_PATH, DB_PATH
 from scraping_helper import Scraper
+from functions.dal.db import DBConnection
 
 URL = "https://www.grupocine.com.uy/SIGE_CN/servlet/com.sigecn.cartelera"
 SELECTOR_CSS_MOVIE_LINKS = "#GridpeliculasContainerTbl a"
 URL_BASE = "https://www.grupocine.com.uy"
 SELECTOR_FULL_MOVIE = ".movie-sucursal"
+
+#title
 SELECTOR_TITLE = '#TXTTITLEPELICULA'
+
+#description
 SELECTOR_DESCRIPTION = '#TXTDESCRIPCIONVAL'
+
+#duration
+SELECTOR_DURATION = '#TXTDURACIONVAL'
+
+#genre
+SELECTOR_GENRE = '#TXTGENEROVAL'
+
+#address
+SELECTOR_ADDRESS = 'input.BtnCRRed'
+
+# image
 SELECTOR_IMAGEN_URL = '#TABLEPELICULACONTAINER img'
+
+#cinema
+CINEMA = 'Grupocine'
+
+
 JSON_NAME = 'gc.json'
 # Se me ocurre que se puede armar como una lista de parametros para pasarle con todos los selectores
-
 
 DEBUG_FLAG = 0
 
 
 def get_links():
     nav = Scraper()
+    db = DBConnection(DB_PATH)
 
     # Cargar URL
     nav.cargar_sitio(URL)
@@ -51,35 +73,37 @@ def get_links():
             print(f"Excepcion al buscar titulo: {e}")
             continue
 
-        # Crear nombre de imagen reemplazando los simbolos invalidos en windows por su equivalente textual
-        imagen = titulo
-
-        if '?' in titulo:
-            imagen = imagen.replace('?', 'SIGNODEPREGUNTA')
-        if ':' in titulo:
-            imagen = imagen.replace(':', 'DOSPUNTOS')
-
         # Obtener descripcion
         descripcion = nav.extraer_texto(SELECTOR_DESCRIPTION)
 
-        # Obtener imagen url
-        # SELECTOR_IMAGEN_URL = '#TABLEPELICULACONTAINER img'
+        # Obtener duracion
+        duracion = nav.extraer_texto(SELECTOR_DURATION)
 
+        # Obtener genero
+        genero = nav.extraer_texto(SELECTOR_GENRE)
+
+        # Obtener direccion
+        direccion = nav.extraer_atributo_generico(SELECTOR_ADDRESS, 'title')
+
+        # Obtener cinema
+        cinema = CINEMA
+
+        # Obtener imagen url
+        SELECTOR_IMAGEN_URL = '#TABLEPELICULACONTAINER img'
+
+        imagen = str(uuid.uuid1())
         imagen_url = nav.extraer_atributo_generico(SELECTOR_IMAGEN_URL, 'src')
 
         download_image(imagen_url, imagen)
-        # TODO: Expandir el json para guardar
-        dict = {"titulo": titulo, "descripcion": descripcion, "imagen": imagen}
-        lista_completa_de_datos.append(dict)
-    #
-    nav.cerrar_navegador()
-    # json_object = json.dumps(lista_completa_de_datos, indent=4)
 
-    # TODO: Scrapear los campos nuevos title, description, duration, genre, address, cinema, image_name
-    # TODO: Guardar la información en la base de datos
-    with open(os.path.join(JSON_PATH, JSON_NAME), "w+") as json_file:
-        json.dump(lista_completa_de_datos, json_file)
-    # return lista_completa_de_datos
+        # Obtenre URL de la pelicula
+        movie_url = nav.chrome.current_url
+
+        db.insert_movie(titulo, descripcion, duracion, genero, direccion, cinema, imagen, movie_url)
+
+    db.cursor.close()
+    db.conn.close()
+    nav.cerrar_navegador()
 
 
 def download_image(url, imagen, save_path=os.path.join(MOVIE_IMAGES_PATH)):
@@ -89,3 +113,6 @@ def download_image(url, imagen, save_path=os.path.join(MOVIE_IMAGES_PATH)):
     print(filename)
     with open(filename, 'w+b') as f:
         shutil.copyfileobj(r.raw, f)
+
+
+get_links()

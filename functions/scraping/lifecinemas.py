@@ -37,10 +37,7 @@ def get_links():
             print("Ignorando url...")
             continue
 
-
-
         nav.cargar_sitio(movie_url)
-
 
         try:
             # Obtener titulo
@@ -72,6 +69,7 @@ def get_links():
         # TODO: Scrapear los campos nuevos title, description, duration, genre, address, cinema, image_name
         # TODO: Guardar la información en la base de datos
         dict = {"titulo": titulo, "descripcion": descripcion, "imagen": imagen}
+
         lista_completa_de_datos.append(dict)
 
     nav.cerrar_navegador()
