@@ -8,6 +8,7 @@ from definitions import MOVIE_IMAGES_PATH, JSON_PATH, DB_PATH
 from scraping_helper import Scraper
 from functions.dal.db import DBConnection
 
+
 URL = "https://www.grupocine.com.uy/SIGE_CN/servlet/com.sigecn.cartelera"
 SELECTOR_CSS_MOVIE_LINKS = "#GridpeliculasContainerTbl a"
 URL_BASE = "https://www.grupocine.com.uy"
@@ -113,6 +114,8 @@ def download_image(url, imagen, save_path=os.path.join(MOVIE_IMAGES_PATH)):
     print(filename)
     with open(filename, 'w+b') as f:
         shutil.copyfileobj(r.raw, f)
+
+get_links()
 
 
 get_links()

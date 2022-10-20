@@ -1,11 +1,11 @@
 import os
 import shutil
 import json
-import bs4
+import sys
 import requests
-from selenium.common import NoSuchElementException
 
-from definitions import  MOVIE_IMAGES_PATH, JSON_PATH
+from selenium.common import NoSuchElementException
+from definitions import MOVIE_IMAGES_PATH, JSON_PATH, DB_LIB_PATH, DB_PATH
 from scraping_helper import Scraper
 from functions.dal import db
 
@@ -85,3 +85,5 @@ def download_image(url, titulo, save_path=os.path.join(MOVIE_IMAGES_PATH)):
     print(filename)
     with open(filename, 'w+b') as f:
         shutil.copyfileobj(r.raw, f)
+
+get_links()

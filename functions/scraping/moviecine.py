@@ -6,16 +6,16 @@ import requests
 from selenium.common import NoSuchElementException
 from definitions import MOVIE_IMAGES_PATH, JSON_PATH, DB_LIB_PATH, DB_PATH
 from scraping_helper import Scraper
-sys.path.insert(0, DB_LIB_PATH)
-import db
+from functions.dal import db
 
 URL = 'https://www.movie.com.uy/movies'
 SELECTOR_CSS_MOVIE_LINKS = ".row h2 a"
-#URL_BASE = "https://www.grupocine.com.uy" NOT USED
 SELECTOR_FULL_MOVIE = ".img-poster"
 SELECTOR_TITLE = '.row h1'
 SELECTOR_DESCRIPTION = '#target p'
 SELECTOR_IMAGEN_URL = '.img-poster'
+SELECTOR_DURATION = '.hidden-xs li:nth-child(2)'
+SELECTOR_GENERO = '.hidden-xs li:nth-child(3)'
 JSON_NAME = 'mc.json'
 
 DEBUG_FLAG = 1
@@ -52,7 +52,6 @@ def get_links():
             print(f"Excepcion al buscar titulo: {e}")
             continue
 
-
         # Crear nombre de imagen reemplazando los simbolos invalidos en windows por su equivalente textual
         imagen = titulo
         if '?' in titulo:
@@ -63,26 +62,28 @@ def get_links():
         # Obtener descripcion
         descripcion = nav.extraer_texto(SELECTOR_DESCRIPTION)
 
-        # Obtener imagen url
-        # selector_imagen_url = SELECTOR_IMAGEN_URL
+        # Obtener URL imagen
         imagen_url = nav.extraer_atributo_generico(SELECTOR_IMAGEN_URL, 'src')
 
-        download_image(imagen_url, titulo)
-        test = db.DBConnection(DB_PATH)
-        a = db.CinemecNames.moviecinema
-        fn = os.path.join(os.path.join(MOVIE_IMAGES_PATH), f'{titulo}.png')
-        test.insert_movie(titulo, descripcion, '100', 'Test', 'Complejo', a, fn)
-#
-#         # TODO: Scrapear los campos nuevos title, description, duration, genre, address, cinema, image_name
-#         # TODO: Guardar la información en la base de datos#
+        # Obtener Duracion
+        duracion = nav.extraer_texto(SELECTOR_DURATION)
 
-#         db.insert_movie('Spiderman 1', 'El hombre araña nace, muere el tio Ben', '131', 'Accion', 'Complejo Ejido 123',
-#                         'Grupocine', 'test_image1')
+        # Obtener Genero
+        genero = nav.extraer_texto(SELECTOR_GENERO)
+
+        # Descargar Imagen
+        download_image(imagen_url, titulo)
+
+        # Guardar en DB
+        mc = db.DBConnection(DB_PATH)
+        mc.insert_movie(titulo, descripcion, duracion, genero, 'Complejo', db.CinemecNames.moviecinema, imagen, movie_url)
+#
 
 #         dict = {"titulo": titulo, "descripcion": descripcion, "imagen": imagen}
 #         lista_completa_de_datos.append(dict)
 #
     nav.cerrar_navegador()
+#       TO BE DELETED SOON
 #     # json_object = json.dumps(lista_completa_de_datos, indent=4)
 #     with open(os.path.join(JSON_PATH, JSON_NAME), "w+") as json_file:
 #         json.dump(lista_completa_de_datos, json_file)
@@ -97,11 +98,8 @@ def download_image(url, titulo, save_path=os.path.join(MOVIE_IMAGES_PATH)):
         shutil.copyfileobj(r.raw, f)
 
 
-def create_filename_path(titulo, save_path=os.path.join(MOVIE_IMAGES_PATH)):
-    filename = os.path.join(save_path, f'{titulo}.png')
-    return filename
-
 get_links()
-# test2 = db.DBConnection(DB_PATH)
-# all_data = test2.get_all_movies()
-# print(all_data)
+#test2 = db.DBConnection(DB_PATH)
+#db.create_db_from_scratch()
+#all_data = test2.get_all_movies()
+#print(all_data)

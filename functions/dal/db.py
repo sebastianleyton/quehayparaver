@@ -65,7 +65,7 @@ class DBConnection:
                 'updated_date) values (?, ?, ?, ?, ?, ?, ? ,?, ?, ?) '
         self.execute(query, tpl)
 
-class CinemeNames:
+class CinemecNames:
     grupocine = 'Cine Grupocine'
     lifecinema = 'Cine Life'
     moviecinema = 'Cine Movie'
