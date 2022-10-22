@@ -10,14 +10,14 @@ from functions.dal import db
 
 URL = 'https://lifecinemas.com.uy/pelicula/cartelera'
 SELECTOR_CSS_MOVIE_LINKS = ".movie-container a"
-#SELECTOR_CSS_URL_MOVIE = ".movie-sucursal div.title-cont-2 h2 a"
-SELECTOR_CSS_URL_MOVIE = "div.title-cont-1 h2 a"
-SELECTOR_TITLE = '.cont-title festival h1'
-SELECTOR_DESCRIPTION = '.row h3'
-SELECTOR_IMAGEN_URL = '.img-poster'
-SELECTOR_DURATION = '.hidden-xs li:nth-child(2)'
-SELECTOR_GENERO = '.hidden-xs li:nth-child(3)'
-JSON_NAME = 'mc.json'
+SELECTOR_CSS_URL_MOVIE = ".movie-sucursal div.title-cont-2 h2 a"
+#SELECTOR_CSS_URL_MOVIE = "div.title-cont-1 h2 a"
+SELECTOR_TITLE = 'div.tech-data dd:nth-child(4)'
+SELECTOR_DESCRIPTION = 'div.sipnosis p'
+SELECTOR_IMAGEN_URL = '.img-movie img'
+SELECTOR_DURATION = 'div.tech-data dd:nth-child(6)'
+SELECTOR_GENERO = 'div.tech-data dd:nth-child(12)'
+JSON_NAME = 'lc.json'
 
 DEBUG_FLAG = 1
 
@@ -40,9 +40,10 @@ def get_links():
     #     lista_completa_de_datos = []
 
     # Inicar loop por cada link de peli
-    lista_completa_de_datos = []
+    lista_completa_de_URLS = []
     contador = 0
     for movie_url in movies_links_str:
+        # Este FOR hace la primer pasada para armar el array lista_completa_de_datos
         print(movie_url)
         contador += 1
         print(f"Iterando lista: {contador} de {len(movies_links_str)}")
@@ -52,44 +53,49 @@ def get_links():
             continue
         ## Caso de que es una pelicula y hay que sacar el link final
         elif "/pelicula/agrupacion" in movie_url:
-            lista_completa_de_datos.append(nav.extraer_url(SELECTOR_CSS_URL_MOVIE))
+            nav.cargar_sitio(movie_url)
+            lista_completa_de_URLS.append(nav.extraer_url(SELECTOR_CSS_URL_MOVIE))
         ## Caso en que la pelicula ya tiene la descripcion
-        else: lista_completa_de_datos.append(movie_url)
-        # nav.cargar_sitio(movie_url)
-        #### SCRAPING POR PELICULA
-        # try:
-        #     # Obtener titulo
-        #     titulo = nav.extraer_texto(SELECTOR_TITLE)
-        # except NoSuchElementException as e:
-        #     print(f"Excepcion al buscar titulo: {e}")
-        #     continue
+        else: lista_completa_de_URLS.append(movie_url)
+    contador = 0
+    for movie_url in  lista_completa_de_URLS:
+        contador += 1
+        print(f"Iterando lista: {contador} de {len(lista_completa_de_URLS)}")
+        nav.cargar_sitio(movie_url)
+        ### SCRAPING POR PELICULA
+        try:
+            # Obtener titulo
+            titulo = nav.extraer_texto(SELECTOR_TITLE)
+        except NoSuchElementException as e:
+            print(f"Excepcion al buscar titulo: {e}")
+            continue
+
+        # Crear nombre de imagen reemplazando los simbolos invalidos en windows por su equivalente textual
+        imagen = titulo
+        if '?' in titulo:
+            imagen = imagen.replace('?', 'SIGNODEPREGUNTA')
+        if ':' in titulo:
+            imagen = imagen.replace(':', 'DOSPUNTOS')
 #
-#         # Crear nombre de imagen reemplazando los simbolos invalidos en windows por su equivalente textual
-#         imagen = titulo
-#         if '?' in titulo:
-#             imagen = imagen.replace('?', 'SIGNODEPREGUNTA')
-#         if ':' in titulo:
-#             imagen = imagen.replace(':', 'DOSPUNTOS')
+        # Obtener descripcion
+        descripcion = nav.extraer_texto(SELECTOR_DESCRIPTION)
+
+        # Obtener URL imagen
+        imagen_url = nav.extraer_atributo_generico(SELECTOR_IMAGEN_URL, 'src')
+
+        # Obtener Duracion
+        duracion = nav.extraer_texto(SELECTOR_DURATION)
+
+        # Obtener Genero
+        genero = nav.extraer_texto(SELECTOR_GENERO)
+
+        # Descargar Imagen
+        download_image(imagen_url, titulo)
+
+        # Guardar en DB
+        mc = db.DBConnection(DB_PATH)
+        mc.insert_movie(titulo, descripcion, duracion, genero, 'Complejo', db.CinemecNames.lifecinema, imagen, movie_url)
 #
-#         # Obtener descripcion
-#         descripcion = nav.extraer_texto(SELECTOR_DESCRIPTION)
-#
-#         # Obtener URL imagen
-#         imagen_url = nav.extraer_atributo_generico(SELECTOR_IMAGEN_URL, 'src')
-#
-#         # Obtener Duracion
-#         duracion = nav.extraer_texto(SELECTOR_DURATION)
-#
-#         # Obtener Genero
-#         genero = nav.extraer_texto(SELECTOR_GENERO)
-#
-#         # Descargar Imagen
-#         download_image(imagen_url, titulo)
-#
-#         # Guardar en DB
-#         mc = db.DBConnection(DB_PATH)
-#         mc.insert_movie(titulo, descripcion, duracion, genero, 'Complejo', db.CinemecNames.moviecinema, imagen, movie_url)
-# #
 
 #         dict = {"titulo": titulo, "descripcion": descripcion, "imagen": imagen}
 #         lista_completa_de_datos.append(dict)
