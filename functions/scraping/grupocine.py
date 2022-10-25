@@ -3,10 +3,12 @@ import shutil
 import json
 import requests
 import uuid
+import datetime
 from selenium.common import NoSuchElementException
 from definitions import MOVIE_IMAGES_PATH, JSON_PATH, DB_PATH
 from scraping_helper import Scraper
 from functions.dal.db import DBConnection
+
 
 
 URL = "https://www.grupocine.com.uy/SIGE_CN/servlet/com.sigecn.cartelera"
@@ -100,7 +102,12 @@ def get_links():
         # Obtenre URL de la pelicula
         movie_url = nav.chrome.current_url
 
+
+        # Poner timestamp en el nombre de la imagen al almacenarla
+        timestamp = datetime.date.today().strftime('%m-%d')
+        imagen = timestamp + "/" + imagen
         db.insert_movie(titulo, descripcion, duracion, genero, direccion, cinema, imagen, movie_url)
+
 
     db.cursor.close()
     db.conn.close()
@@ -108,14 +115,29 @@ def get_links():
 
 
 def download_image(url, imagen, save_path=os.path.join(MOVIE_IMAGES_PATH)):
+    # Crear timestamp para la carpeta donde se va a guardar
+    # si la carpeta no existe, crearla, si existe, no hacer nada
+    # pasar parametero timestamp al nombre de la imagen para guardar en la db
+    timestamp = datetime.date.today().strftime('%m-%d')
+
+    # Crear directorio con la fecha de hoy si no existe
+    if not os.path.exists(os.path.join(save_path, timestamp)):
+        os.makedirs(os.path.join(save_path, timestamp))
+
+    # Crear directorio con la fecha de hoy si no existe
+    if not os.path.exists(os.path.join(save_path, 'current')):
+        os.makedirs(os.path.join(save_path, 'current'))
+
     r = requests.get(url, stream=True)
     print(r.status_code)
-    filename = os.path.join(save_path, f'{imagen}.png')
+    filename = os.path.join(save_path, timestamp, f'{imagen}.png')
     print(filename)
     with open(filename, 'w+b') as f:
         shutil.copyfileobj(r.raw, f)
 
-get_links()
-
+    filename = os.path.join(save_path, 'current', f'{imagen}.png')
+    print(filename)
+    with open(filename, 'w+b') as f:
+        shutil.copyfileobj(r.raw, f)
 
 get_links()
