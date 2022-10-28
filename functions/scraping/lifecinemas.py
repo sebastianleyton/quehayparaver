@@ -1,22 +1,22 @@
-import os
-import shutil
-import json
-import sys
-import requests
+
+import datetime
+import uuid
 from selenium.common import NoSuchElementException
-from definitions import MOVIE_IMAGES_PATH, JSON_PATH, DB_LIB_PATH, DB_PATH
-from scraping_helper import Scraper
-from functions.dal import db
+from definitions import DB_PATH
+from scraping_helper import Scraper, download_image
+from functions.dal.db import DBConnection, CinemecNames
 
 URL = 'https://lifecinemas.com.uy/pelicula/cartelera'
 SELECTOR_CSS_MOVIE_LINKS = ".movie-container a"
 SELECTOR_CSS_URL_MOVIE = ".movie-sucursal div.title-cont-2 h2 a"
-#SELECTOR_CSS_URL_MOVIE = "div.title-cont-1 h2 a"
 SELECTOR_TITLE = 'div.tech-data dd:nth-child(4)'
 SELECTOR_DESCRIPTION = 'div.sipnosis p'
 SELECTOR_IMAGEN_URL = '.img-movie img'
 SELECTOR_DURATION = 'div.tech-data dd:nth-child(6)'
-SELECTOR_GENERO = 'div.tech-data dd:nth-child(12)'
+SELECTOR_CAST = 'div.tech-data dt:nth-child(9)'
+SELECTOR_GENRE_1 = 'div.tech-data dd:nth-child(12)'
+SELECTOR_GENRE_2 = 'div.tech-data dd:nth-child(10)'
+SELECTOR_COMPLEX = '.date-data h3'
 JSON_NAME = 'lc.json'
 
 DEBUG_FLAG = 1
@@ -24,20 +24,13 @@ DEBUG_FLAG = 1
 
 def get_links():
     nav = Scraper()
+    db = DBConnection(DB_PATH)
 
     # Cargar URL CARTELERA DE PELIS
     nav.cargar_sitio(URL)
 
     # Guardar links de pelis
     movies_links_str = nav.extraer_url_de_lista(SELECTOR_CSS_MOVIE_LINKS)
-    # for movies in movies_links_str:
-    #     print(movies)
-    #     nav.cargar_sitio(movies)
-    #     lista_completa_de_datos.append(nav.extraer_url(SELECTOR_CSS_URL_MOVIE))
-    #     print(lista_completa_de_datos)
-    # movies_links_str_final = nav.extraer_url_de_lista()
-    #     # Inicializar lista final de datos
-    #     lista_completa_de_datos = []
 
     # Inicar loop por cada link de peli
     lista_completa_de_URLS = []
@@ -56,7 +49,8 @@ def get_links():
             nav.cargar_sitio(movie_url)
             lista_completa_de_URLS.append(nav.extraer_url(SELECTOR_CSS_URL_MOVIE))
         ## Caso en que la pelicula ya tiene la descripcion
-        else: lista_completa_de_URLS.append(movie_url)
+        else:
+            lista_completa_de_URLS.append(movie_url)
     contador = 0
     for movie_url in  lista_completa_de_URLS:
         contador += 1
@@ -72,6 +66,7 @@ def get_links():
 
         # Crear nombre de imagen reemplazando los simbolos invalidos en windows por su equivalente textual
         imagen = titulo
+        ## Armar Funcion?
         if '?' in titulo:
             imagen = imagen.replace('?', 'SIGNODEPREGUNTA')
         if ':' in titulo:
@@ -80,40 +75,37 @@ def get_links():
         # Obtener descripcion
         descripcion = nav.extraer_texto(SELECTOR_DESCRIPTION)
 
-        # Obtener URL imagen
-        imagen_url = nav.extraer_atributo_generico(SELECTOR_IMAGEN_URL, 'src')
-
         # Obtener Duracion
         duracion = nav.extraer_texto(SELECTOR_DURATION)
 
-        # Obtener Genero
-        genero = nav.extraer_texto(SELECTOR_GENERO)
+        # Obtener Genero dependiendo de la pagina (Casos en que no existe el row Actores)
+        if nav.extraer_texto(SELECTOR_CAST) == 'Actores:':
+            genero = nav.extraer_texto(SELECTOR_GENRE_1)
+        else:
+            genero = nav.extraer_texto(SELECTOR_GENRE_2)
+
+        # Obtener cinema
+        cinema = CinemecNames.lifecinema
+
+        # Obtener Complejos
+        complejos = nav.extraer_texto_de_lista(SELECTOR_COMPLEX)
 
         # Descargar Imagen
-        download_image(imagen_url, titulo)
+        imagen = str(uuid.uuid1())
+        imagen_url = nav.extraer_atributo_generico(SELECTOR_IMAGEN_URL, 'src')
+        download_image(imagen_url, imagen)
+
+        movie_url = nav.chrome.current_url
+        # Poner timestamp en el nombre de la imagen al almacenarla
+        timestamp = datetime.date.today().strftime('%m-%d')
+        imagen = timestamp + "/" + imagen
 
         # Guardar en DB
-        mc = db.DBConnection(DB_PATH)
-        mc.insert_movie(titulo, descripcion, duracion, genero, 'Complejo', db.CinemecNames.lifecinema, imagen, movie_url)
-#
-
-#         dict = {"titulo": titulo, "descripcion": descripcion, "imagen": imagen}
-#         lista_completa_de_datos.append(dict)
-#
+        for complejo in complejos:
+            db.insert_movie(titulo, descripcion, duracion, genero, complejo, cinema, imagen, movie_url)
+    db.cursor.close()
+    db.conn.close()
     nav.cerrar_navegador()
-#       TO BE DELETED SOON
-#     # json_object = json.dumps(lista_completa_de_datos, indent=4)
-#     with open(os.path.join(JSON_PATH, JSON_NAME), "w+") as json_file:
-#         json.dump(lista_completa_de_datos, json_file)
-#     # return lista_completa_de_datos
-#
-def download_image(url, titulo, save_path=os.path.join(MOVIE_IMAGES_PATH)):
-    r = requests.get(url, stream=True)
-    print(r.status_code)
-    filename = os.path.join(save_path, f'{titulo}.png')
-    print(filename)
-    with open(filename, 'w+b') as f:
-        shutil.copyfileobj(r.raw, f)
 
 
 get_links()
