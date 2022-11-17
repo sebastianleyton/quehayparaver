@@ -4,7 +4,7 @@ import uuid
 from selenium.common import NoSuchElementException
 from definitions import DB_PATH
 from scraping_helper import Scraper, download_image
-from functions.dal.db import DBConnection, CinemecNames
+from functions.dal.db import DBConnection, CinemecNames, create_db_from_scratch
 
 URL = 'https://lifecinemas.com.uy/pelicula/cartelera'
 SELECTOR_CSS_MOVIE_LINKS = ".movie-container a"
@@ -109,7 +109,8 @@ def get_links():
 
 
 get_links()
-#test2 = db.DBConnection(DB_PATH)
-#db.create_db_from_scratch()
-#all_data = test2.get_all_movies()
-#print(all_data)
+# db = DBConnection(DB_PATH)
+# test2 = db.DBConnection(DB_PATH)
+# create_db_from_scratch()
+# all_data = test2.get_all_movies()
+# print(all_data)`

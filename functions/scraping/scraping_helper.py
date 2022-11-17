@@ -4,14 +4,10 @@ import requests
 import datetime
 from selenium import webdriver
 from definitions import MOVIE_IMAGES_PATH
-from selenium.webdriver.chrome.options import Options
+# from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-
-
-
-
 
 class Scraper:
     def __init__(self):
@@ -140,31 +136,31 @@ class Scraper:
         print(f"Cantidad attr {atributo} extraidos: {len(lista_attr)}")
         return lista_attr
 
-    def download_image(url, imagen, save_path=os.path.join(MOVIE_IMAGES_PATH)):
-        # Crear timestamp para la carpeta donde se va a guardar
-        # si la carpeta no existe, crearla, si existe, no hacer nada
-        # pasar parametero timestamp al nombre de la imagen para guardar en la db
-        timestamp = datetime.date.today().strftime('%m-%d')
-
-        # Crear directorio con la fecha de hoy si no existe
-        if not os.path.exists(os.path.join(save_path, timestamp)):
-            os.makedirs(os.path.join(save_path, timestamp))
-
-        # Crear directorio con la fecha de hoy si no existe
-        if not os.path.exists(os.path.join(save_path, 'current')):
-            os.makedirs(os.path.join(save_path, 'current'))
-
-        r = requests.get(url, stream=True)
-        print(r.status_code)
-        filename = os.path.join(save_path, timestamp, f'{imagen}.png')
-        print(filename)
-        with open(filename, 'w+b') as f:
-            shutil.copyfileobj(r.raw, f)
-
-        filename = os.path.join(save_path, 'current', f'{imagen}.png')
-        print(filename)
-        with open(filename, 'w+b') as f:
-            shutil.copyfileobj(r.raw, f)
+    # def download_image(url, imagen, save_path=os.path.join(MOVIE_IMAGES_PATH)):
+    #     # Crear timestamp para la carpeta donde se va a guardar
+    #     # si la carpeta no existe, crearla, si existe, no hacer nada
+    #     # pasar parametero timestamp al nombre de la imagen para guardar en la db
+    #     timestamp = datetime.date.today().strftime('%m-%d')
+    #
+    #     # Crear directorio con la fecha de hoy si no existe
+    #     if not os.path.exists(os.path.join(save_path, timestamp)):
+    #         os.makedirs(os.path.join(save_path, timestamp))
+    #
+    #     # Crear directorio con la fecha de hoy si no existe
+    #     if not os.path.exists(os.path.join(save_path, 'current')):
+    #         os.makedirs(os.path.join(save_path, 'current'))
+    #
+    #     r = requests.get(url, stream=True)
+    #     print(r.status_code)
+    #     filename = os.path.join(save_path, timestamp, f'{imagen}.png')
+    #     print(filename)
+    #     with open(filename, 'w+b') as f:
+    #         shutil.copyfileobj(r.raw, f)
+    #
+    #     filename = os.path.join(save_path, 'current', f'{imagen}.png')
+    #     print(filename)
+    #     with open(filename, 'w+b') as f:
+    #         shutil.copyfileobj(r.raw, f)
 
     def cerrar_navegador(self):
         self.chrome.close()
@@ -180,6 +176,12 @@ def normalizar_duracion(duracion_text):
         return int(duracion_text.replace('h', '')) * 60
     return int(duracion_text.replace('m', ''))
 
+def minute_trim(text):
+    if "m" in text:
+        a = text.split("m")
+        return(a[0])
+    else:
+        return(text)
 def download_image(url, imagen, save_path=os.path.join(MOVIE_IMAGES_PATH)):
     # Crear timestamp para la carpeta donde se va a guardar
     # si la carpeta no existe, crearla, si existe, no hacer nada

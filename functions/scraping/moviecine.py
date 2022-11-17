@@ -58,8 +58,6 @@ def get_links():
 
         # Obtener Duracion
         d1 = nav.extraer_texto(SELECTOR_DURATION)
-        print(type(d1))
-        print(d1)
         duracion = normalizar_duracion(d1)
 
         # Obtener Genero
@@ -90,7 +88,7 @@ def get_links():
 
 
 get_links()
-#test2 = db.DBConnection(DB_PATH)
-#db.create_db_from_scratch()
+# test2 = db.DBConnection(DB_PATH)
+# db.create_db_from_scratch()
 #all_data = test2.get_all_movies()
 #print(all_data)

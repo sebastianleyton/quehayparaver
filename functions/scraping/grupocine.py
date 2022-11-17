@@ -6,7 +6,7 @@ import uuid
 import datetime
 from selenium.common import NoSuchElementException
 from definitions import MOVIE_IMAGES_PATH, JSON_PATH, DB_PATH
-from scraping_helper import Scraper, download_image
+from scraping_helper import Scraper, download_image, minute_trim
 from functions.dal.db import DBConnection
 
 
@@ -80,7 +80,7 @@ def get_links():
         descripcion = nav.extraer_texto(SELECTOR_DESCRIPTION)
 
         # Obtener duracion
-        duracion = nav.extraer_texto(SELECTOR_DURATION)
+        duracion = minute_trim(nav.extraer_texto(SELECTOR_DURATION))
 
         # Obtener genero
         genero = nav.extraer_texto(SELECTOR_GENRE)
