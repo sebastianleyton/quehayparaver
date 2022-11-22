@@ -14,7 +14,7 @@ SELECTOR_TITLE = 'div.tech-data dd:nth-child(4)'
 SELECTOR_DESCRIPTION = 'div.sipnosis p'
 SELECTOR_IMAGEN_URL = '.img-movie img'
 SELECTOR_DURATION = 'div.tech-data dd:nth-child(6)'
-SELECTOR_CAST = '/html/body/div[2]/div/div[1]/div[3]/div/dl/dd[5]'
+SELECTOR_CAST = 'div.tech-data dt:nth-child(9)'
 # 'div.tech-data dt:nth-child(9)'
 # /html/body/div[2]/div/div[1]/div[3]/div/dl/dd[5]
 SELECTOR_GENRE_1 = 'div.tech-data dd:nth-child(12)'
