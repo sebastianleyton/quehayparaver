@@ -7,6 +7,7 @@ from scraping_helper import Scraper, normalizar_duracion, download_image
 from functions.dal.db import DBConnection, CinemecNames
 import datetime
 import uuid
+import time
 
 
 URL = 'https://www.movie.com.uy/movies'
@@ -37,6 +38,7 @@ def get_links():
         contador += 1
         print(f"Iterando lista: {contador} de {len(movies_links_str)}")
         nav.cargar_sitio(movie_url)
+        time.sleep(1)
 
         #### SCRAPING POR PELICULA
         try:

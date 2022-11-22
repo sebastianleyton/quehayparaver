@@ -8,6 +8,7 @@ from selenium.common import NoSuchElementException
 from definitions import MOVIE_IMAGES_PATH, JSON_PATH, DB_PATH
 from scraping_helper import Scraper, download_image, minute_trim
 from functions.dal.db import DBConnection
+import time
 
 
 
@@ -15,31 +16,15 @@ URL = "https://www.grupocine.com.uy/SIGE_CN/servlet/com.sigecn.cartelera"
 SELECTOR_CSS_MOVIE_LINKS = "#GridpeliculasContainerTbl a"
 URL_BASE = "https://www.grupocine.com.uy"
 SELECTOR_FULL_MOVIE = ".movie-sucursal"
-
-#title
 SELECTOR_TITLE = '#TXTTITLEPELICULA'
-
-#description
 SELECTOR_DESCRIPTION = '#TXTDESCRIPCIONVAL'
-
-#duration
 SELECTOR_DURATION = '#TXTDURACIONVAL'
-
-#genre
 SELECTOR_GENRE = '#TXTGENEROVAL'
-
-#address
 SELECTOR_ADDRESS = 'input.BtnCRRed'
-
-# image
 SELECTOR_IMAGEN_URL = '#TABLEPELICULACONTAINER img'
-
-#cinema
 CINEMA = 'Grupocine'
-
-
 JSON_NAME = 'gc.json'
-# Se me ocurre que se puede armar como una lista de parametros para pasarle con todos los selectores
+
 
 DEBUG_FLAG = 0
 
@@ -68,6 +53,7 @@ def get_links():
         #     print("Ignorando url...")
         #     continue
         nav.cargar_sitio(movie_url)
+        time.sleep(1)
 
         try:
             # Obtener titulo

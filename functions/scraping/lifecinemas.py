@@ -5,6 +5,7 @@ from selenium.common import NoSuchElementException
 from definitions import DB_PATH
 from scraping_helper import Scraper, download_image
 from functions.dal.db import DBConnection, CinemecNames, create_db_from_scratch
+import time
 
 URL = 'https://lifecinemas.com.uy/pelicula/cartelera'
 SELECTOR_CSS_MOVIE_LINKS = ".movie-container a"
@@ -13,7 +14,9 @@ SELECTOR_TITLE = 'div.tech-data dd:nth-child(4)'
 SELECTOR_DESCRIPTION = 'div.sipnosis p'
 SELECTOR_IMAGEN_URL = '.img-movie img'
 SELECTOR_DURATION = 'div.tech-data dd:nth-child(6)'
-SELECTOR_CAST = 'div.tech-data dt:nth-child(9)'
+SELECTOR_CAST = '/html/body/div[2]/div/div[1]/div[3]/div/dl/dd[5]'
+# 'div.tech-data dt:nth-child(9)'
+# /html/body/div[2]/div/div[1]/div[3]/div/dl/dd[5]
 SELECTOR_GENRE_1 = 'div.tech-data dd:nth-child(12)'
 SELECTOR_GENRE_2 = 'div.tech-data dd:nth-child(10)'
 SELECTOR_COMPLEX = '.date-data h3'
@@ -56,6 +59,7 @@ def get_links():
         contador += 1
         print(f"Iterando lista: {contador} de {len(lista_completa_de_URLS)}")
         nav.cargar_sitio(movie_url)
+        time.sleep(1)
         ### SCRAPING POR PELICULA
         try:
             # Obtener titulo
