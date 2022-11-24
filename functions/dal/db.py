@@ -82,3 +82,5 @@ def test_db_functions():
     db.insert_movie('Spiderman 2', 'El doctor octopus nace, muere la tía May', '147', 'Accion', 'Complejo Ejido 123', 'Lifecinema', 'test_image2')
     db.insert_movie('Spiderman 3', 'El hombre de arena nace, muere Harry', '121', 'Accion', 'Complejo Ejido 123', 'Cinemovie', 'test_image3')
     all_data = db.get_all_movies()
+
+

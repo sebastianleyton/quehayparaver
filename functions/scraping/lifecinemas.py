@@ -3,6 +3,7 @@ import datetime
 import uuid
 from selenium.common import NoSuchElementException
 from definitions import DB_PATH
+from entities.movies import Movie
 from scraping_helper import Scraper, download_image
 from functions.dal.db import DBConnection, CinemecNames, create_db_from_scratch
 import time
@@ -106,9 +107,9 @@ def get_links():
 
         # Guardar en DB
         for complejo in complejos:
-            db.insert_movie(titulo, descripcion, duracion, genero, complejo, cinema, imagen, movie_url)
-    db.cursor.close()
-    db.conn.close()
+            movie = Movie(titulo, descripcion, duracion, genero, complejo, CinemecNames.moviecinema, imagen, movie_url)
+            movie.save()
+
     nav.cerrar_navegador()
 
 

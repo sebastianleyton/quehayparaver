@@ -6,6 +6,7 @@ import uuid
 import datetime
 from selenium.common import NoSuchElementException
 from definitions import MOVIE_IMAGES_PATH, JSON_PATH, DB_PATH
+from entities.movies import Movie
 from scraping_helper import Scraper, download_image, minute_trim
 from functions.dal.db import DBConnection
 import time
@@ -92,7 +93,9 @@ def get_links():
         # Poner timestamp en el nombre de la imagen al almacenarla
         timestamp = datetime.date.today().strftime('%m-%d')
         imagen = timestamp + "/" + imagen
-        db.insert_movie(titulo, descripcion, duracion, genero, direccion, cinema, imagen, movie_url)
+
+        movie = Movie(titulo, descripcion, duracion, genero, direccion, cinema, imagen, movie_url)
+        movie.save()
 
 
     db.cursor.close()
