@@ -30,9 +30,8 @@ JSON_NAME = 'gc.json'
 DEBUG_FLAG = 0
 
 
-def get_links():
+def scrape_data():
     nav = Scraper()
-    db = DBConnection(DB_PATH)
 
     # Cargar URL
     nav.cargar_sitio(URL)
@@ -97,12 +96,4 @@ def get_links():
         movie = Movie(titulo, descripcion, duracion, genero, direccion, cinema, imagen, movie_url)
         movie.save()
 
-
-    db.cursor.close()
-    db.conn.close()
     nav.cerrar_navegador()
-
-
-
-
-get_links()

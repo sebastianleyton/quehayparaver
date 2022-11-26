@@ -22,10 +22,9 @@ SELECTOR_GENERO = '.hidden-xs li:nth-child(3)'
 SELECTOR_COMPLEX = '.schedules h5'
 JSON_NAME = 'mc.json'
 
-def get_links():
+def scrape_data():
     # Inicializacion de nav que es de de Clase Scraper
     nav = Scraper()
-    db = DBConnection(DB_PATH)
 
     # Cargar URL
     nav.cargar_sitio(URL)
@@ -88,11 +87,3 @@ def get_links():
             movie.save()
 
     nav.cerrar_navegador()
-
-
-
-get_links()
-# test2 = db.DBConnection(DB_PATH)
-# db.create_db_from_scratch()
-#all_data = test2.get_all_movies()
-#print(all_data)

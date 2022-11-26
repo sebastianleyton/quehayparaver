@@ -7,6 +7,7 @@ from entities.movies import Movie
 from scraping_helper import Scraper, download_image
 from functions.dal.db import DBConnection, CinemecNames, create_db_from_scratch
 import time
+from scraping_helper import log
 
 URL = 'https://lifecinemas.com.uy/pelicula/cartelera'
 SELECTOR_CSS_MOVIE_LINKS = ".movie-container a"
@@ -23,12 +24,11 @@ SELECTOR_GENRE_2 = 'div.tech-data dd:nth-child(10)'
 SELECTOR_COMPLEX = '.date-data h3'
 JSON_NAME = 'lc.json'
 
-DEBUG_FLAG = 1
+LOG_LEVEL = 3 # 1 - solo errores, 2 - errores y warnings, 3 - errores, warnings e info
 
 
-def get_links():
+def scrape_data():
     nav = Scraper()
-    db = DBConnection(DB_PATH)
 
     # Cargar URL CARTELERA DE PELIS
     nav.cargar_sitio(URL)
@@ -41,12 +41,12 @@ def get_links():
     contador = 0
     for movie_url in movies_links_str:
         # Este FOR hace la primer pasada para armar el array lista_completa_de_datos
-        print(movie_url)
+        log(movie_url, 3, LOG_LEVEL)
         contador += 1
-        print(f"Iterando lista: {contador} de {len(movies_links_str)}")
+        log(f"Iterando lista: {contador} de {len(movies_links_str)}", 3, LOG_LEVEL)
         ## Caso de que es un festival
         if "/festival/" in movie_url:
-            print("Ignorando url...")
+            log("Ignorando url...", 3, LOG_LEVEL)
             continue
         ## Caso de que es una pelicula y hay que sacar el link final
         elif "/pelicula/agrupacion" in movie_url:
@@ -58,7 +58,7 @@ def get_links():
     contador = 0
     for movie_url in  lista_completa_de_URLS:
         contador += 1
-        print(f"Iterando lista: {contador} de {len(lista_completa_de_URLS)}")
+        log(f"Iterando lista: {contador} de {len(lista_completa_de_URLS)}", 3, LOG_LEVEL)
         nav.cargar_sitio(movie_url)
         time.sleep(1)
         ### SCRAPING POR PELICULA
@@ -66,17 +66,9 @@ def get_links():
             # Obtener titulo
             titulo = nav.extraer_texto(SELECTOR_TITLE)
         except NoSuchElementException as e:
-            print(f"Excepcion al buscar titulo: {e}")
+            log(f"Excepcion al buscar titulo: {e}", 1, LOG_LEVEL)
             continue
 
-        # Crear nombre de imagen reemplazando los simbolos invalidos en windows por su equivalente textual
-        imagen = titulo
-        ## Armar Funcion?
-        if '?' in titulo:
-            imagen = imagen.replace('?', 'SIGNODEPREGUNTA')
-        if ':' in titulo:
-            imagen = imagen.replace(':', 'DOSPUNTOS')
-#
         # Obtener descripcion
         descripcion = nav.extraer_texto(SELECTOR_DESCRIPTION)
 
@@ -88,9 +80,6 @@ def get_links():
             genero = nav.extraer_texto(SELECTOR_GENRE_1)
         else:
             genero = nav.extraer_texto(SELECTOR_GENRE_2)
-
-        # Obtener cinema
-        cinema = CinemecNames.lifecinema
 
         # Obtener Complejos
         complejos = nav.extraer_texto_de_lista(SELECTOR_COMPLEX)
@@ -112,10 +101,4 @@ def get_links():
 
     nav.cerrar_navegador()
 
-
-get_links()
-# db = DBConnection(DB_PATH)
-# test2 = db.DBConnection(DB_PATH)
-# create_db_from_scratch()
-# all_data = test2.get_all_movies()
-# print(all_data)`
+scrape_data()

@@ -3,11 +3,12 @@ import os
 import requests
 import datetime
 from selenium import webdriver
-from definitions import MOVIE_IMAGES_PATH
+from definitions import MOVIE_IMAGES_PATH, LOG_PATH
 # from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
+
 
 class Scraper:
     def __init__(self):
@@ -165,6 +166,7 @@ class Scraper:
     def cerrar_navegador(self):
         self.chrome.close()
 
+
 def normalizar_duracion(duracion_text):
     duracion_text = str(duracion_text)
     if "h" in duracion_text:
@@ -176,15 +178,18 @@ def normalizar_duracion(duracion_text):
         return int(duracion_text.replace('h', '')) * 60
     elif "m" in duracion_text:
         return int(duracion_text.replace('m', ''))
-    else: return(duracion_text)
+    else:
+        return (duracion_text)
 
 
 def minute_trim(text):
     if "m" in text:
         a = text.split("m")
-        return(a[0])
+        return (a[0])
     else:
-        return(text)
+        return (text)
+
+
 def download_image(url, imagen, save_path=os.path.join(MOVIE_IMAGES_PATH)):
     # Crear timestamp para la carpeta donde se va a guardar
     # si la carpeta no existe, crearla, si existe, no hacer nada
@@ -200,13 +205,28 @@ def download_image(url, imagen, save_path=os.path.join(MOVIE_IMAGES_PATH)):
         os.makedirs(os.path.join(save_path, 'current'))
 
     r = requests.get(url, stream=True)
-    print(r.status_code)
     filename = os.path.join(save_path, timestamp, f'{imagen}.png')
-    print(filename)
     with open(filename, 'w+b') as f:
         shutil.copyfileobj(r.raw, f)
 
     filename = os.path.join(save_path, 'current', f'{imagen}.png')
-    print(filename)
     with open(filename, 'w+b') as f:
         shutil.copyfileobj(r.raw, f)
+
+
+def log(msg, log_type, set_level):
+    if log_type > set_level:
+        return
+
+    if log_type == 1:
+        msg = f"[ERROR] - {msg}"
+    elif log_type == 2:
+        msg = f"[WARNING] - {msg}"
+    elif log_type == 3:
+        msg = f"[INFO] - {msg}"
+
+    time = datetime.date.today().strftime('%m-%d-%Y')
+    timestamp = datetime.date.today().strftime('%H:%M:%S')
+    filename = f"log_{time}"
+    with open(os.path.join(LOG_PATH, filename), 'a') as f:
+        f.write(f"{timestamp} - {msg}\n")
