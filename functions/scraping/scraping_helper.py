@@ -11,130 +11,131 @@ from selenium.webdriver.common.by import By
 
 
 class Scraper:
-    def __init__(self):
-        print("Abriendo navegador")
+    def __init__(self, log_level=3):
+        self.log_level = log_level
         self.chrome = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+        log("Abriendo navegador", 3, self.log_level)
 
     def cargar_sitio(self, url):
-        print(f"Cargando sitio: {url}")
+        log(f"Cargando sitio: {url}", 3, self.log_level)
         self.chrome.get(url)
 
     def obtener_objeto_por_css_selector(self, css_selector):
-        print(f"Obteniendo elemento con selector: {css_selector}")
+        log(f"Obteniendo elemento con selector: {css_selector}", 3, self.log_level)
         elemento_html = self.chrome.find_element(By.CSS_SELECTOR, css_selector)
         return elemento_html
 
     def obtener_objeto_por_xpath(self, xpath_selector):
-        print(f"Obteniendo elemento con selector: {xpath_selector}")
+        log(f"Obteniendo elemento con selector: {xpath_selector}", 3, self.log_level)
         elemento_html = self.chrome.find_element(By.XPATH, xpath_selector)
         return elemento_html
 
     def obtener_lista_objetos_por_css_selector(self, css_selector):
-        print(f"Obteniendo elementos con selector: {css_selector}")
+        log(f"Obteniendo elementos con selector: {css_selector}", 3, self.log_level)
         elementos_html = self.chrome.find_elements(By.CSS_SELECTOR, css_selector)
-        print(f"Obtenidos {len(elementos_html)} elementos")
+        log(f"Obtenidos {len(elementos_html)} elementos", 3, self.log_level)
         return elementos_html
 
     def obtener_lista_objetos_por_xpath(self, xpath_selector):
-        print(f"Obteniendo elementos con selector: {xpath_selector}")
+        log(f"Obteniendo elementos con selector: {xpath_selector}", 3, self.log_level)
         elementos_html = self.chrome.find_elements(By.XPATH, xpath_selector)
-        print(f"Obtenidos {len(elementos_html)} elementos")
+        log(f"Obtenidos {len(elementos_html)} elementos", 3, self.log_level)
         return elementos_html
 
     def extraer_texto(self, css_selector):
-        print("Extrayendo texto")
+        log("Extrayendo texto", 3, self.log_level)
         elemento_html = self.obtener_objeto_por_css_selector(css_selector)
         texto = elemento_html.text
-        print(f"Texto extraido: {texto}")
+        log(f"Texto extraido: {texto}", 3, self.log_level)
         return texto
 
     def extraer_texto_por_xpath(self, xpath_selector):
-        print("Extrayendo texto")
+        log("Extrayendo texto", 3, self.log_level)
         elemento_html = self.obtener_objeto_por_xpath(xpath_selector)
         texto = elemento_html.text
-        print(f"Texto extraido: {texto}")
+        log(f"Texto extraido: {texto}", 3, self.log_level)
         return texto
 
     def extraer_texto_de_lista(self, css_selector):
-        print("Extrayendo texto")
+        log("Extrayendo texto", 3, self.log_level)
         elemento_htmls = self.obtener_lista_objetos_por_css_selector(css_selector)
         lista_texto = []
         for e in elemento_htmls:
             lista_texto.append(e.text)
-        print(f"Cantidad textos extraidos: {len(lista_texto)}")
+        log(f"Cantidad textos extraidos: {len(lista_texto)}", 3, self.log_level)
         return lista_texto
 
     def extraer_texto_de_lista_por_xpath(self, xpath_selector):
-        print("Extrayendo texto")
+        log("Extrayendo texto", 3, self.log_level)
         elemento_htmls = self.obtener_lista_objetos_por_xpath(xpath_selector)
         lista_texto = []
         for e in elemento_htmls:
             lista_texto.append(e.text)
-        print(f"Cantidad textos extraidos: {len(lista_texto)}")
+        log(f"Cantidad textos extraidos: {len(lista_texto)}", 3, self.log_level)
         return lista_texto
 
     def extraer_url(self, css_selector):
-        print("Extrayendo URL")
+        log("Extrayendo URL", 3, self.log_level)
         elemento_html = self.obtener_objeto_por_css_selector(css_selector)
         url = elemento_html.get_attribute('href')
-        print(f"URL extraida: {url}")
+        log(f"URL extraida: {url}", 3, self.log_level)
         return url
 
     def extraer_url_por_xpath(self, xpath_selector):
-        print("Extrayendo URL")
+        log("Extrayendo URL", 3, self.log_level)
         elemento_html = self.extraer_texto_de_lista_por_xpath(xpath_selector)
         url = elemento_html.get_attribute('href')
-        print(f"URL extraida: {url}")
+        log(f"URL extraida: {url}", 3, self.log_level)
         return url
 
     def extraer_url_de_lista(self, css_selector):
-        print("Extrayendo urls")
+        log("Extrayendo urls", 3, self.log_level)
         elemento_htmls = self.obtener_lista_objetos_por_css_selector(css_selector)
         lista_urls = []
         for e in elemento_htmls:
             lista_urls.append(e.get_attribute('href'))
-        print(f"Cantidad URLs extraidos: {len(lista_urls)}")
+        log(f"Cantidad URLs extraidos: {len(lista_urls)}", 3, self.log_level)
         return lista_urls
 
     def extraer_url_de_lista_por_xpath(self, xpath_selector):
-        print("Extrayendo urls")
+        log("Extrayendo urls", 3, self.log_level)
         elemento_htmls = self.obtener_lista_objetos_por_xpath(xpath_selector)
         lista_urls = []
         for e in elemento_htmls:
             lista_urls.append(e.get_attribute('href'))
-        print(f"Cantidad URLs extraidos: {len(lista_urls)}")
+        log(f"Cantidad URLs extraidos: {len(lista_urls)}", 3, self.log_level)
         return lista_urls
 
     def extraer_atributo_generico(self, css_selector, atributo):
-        print(f"Extrayendo atributo {atributo}")
+        log(f"Extrayendo atributo {atributo}", 3, self.log_level)
         elemento_html = self.obtener_objeto_por_css_selector(css_selector)
         atributo = elemento_html.get_attribute(atributo)
-        print(f"Atributo extraido: {atributo}")
+        log(f"Atributo extraido: {atributo}", 3, self.log_level)
         return atributo
 
     def extraer_atributo_generico_por_xpath(self, xpath_selector, atributo):
-        print(f"Extrayendo atributo {atributo}")
+        log(f"Extrayendo atributo {atributo}", 3, self.log_level)
         elemento_html = self.obtener_objeto_por_xpath(xpath_selector)
         atributo = elemento_html.get_attribute(atributo)
-        print(f"Atributo extraido: {atributo}")
+        log(f"Atributo extraido: {atributo}", 3, self.log_level)
         return atributo
 
     def extraer_lista_atributo_generico(self, css_selector, atributo):
-        print(f"Extrayendo atributo: {atributo}")
+        log(f"Extrayendo atributo: {atributo}", 3, self.log_level)
         elemento_htmls = self.obtener_lista_objetos_por_css_selector(css_selector)
         lista_attr = []
         for e in elemento_htmls:
             lista_attr.append(e.get_attribute(atributo))
-        print(f"Cantidad attr {atributo} extraidos: {len(lista_attr)}")
+        log(f"Cantidad attr {atributo} extraidos: {len(lista_attr)}", 3, self.log_level)
         return lista_attr
 
     def extraer_lista_atributo_generico_por_xpath(self, xpath_selector, atributo):
-        print(f"Extrayendo atributo: {atributo}")
+        log(f"Extrayendo atributo: {atributo}", 3, self.log_level)
         elemento_htmls = self.obtener_lista_objetos_por_xpath(xpath_selector)
         lista_attr = []
         for e in elemento_htmls:
             lista_attr.append(e.get_attribute(atributo))
-        print(f"Cantidad attr {atributo} extraidos: {len(lista_attr)}")
+        log(f"Cantidad attr {atributo} extraidos: {len(lista_attr)}", 3, self.log_level)
         return lista_attr
 
     # def download_image(url, imagen, save_path=os.path.join(MOVIE_IMAGES_PATH)):
@@ -226,7 +227,7 @@ def log(msg, log_type, set_level):
         msg = f"[INFO] - {msg}"
 
     time = datetime.date.today().strftime('%m-%d-%Y')
-    timestamp = datetime.date.today().strftime('%H:%M:%S')
-    filename = f"log_{time}"
+    timestamp = datetime.datetime.today().strftime('%H:%M:%S')
+    filename = f"log_{time}.txt"
     with open(os.path.join(LOG_PATH, filename), 'a') as f:
         f.write(f"{timestamp} - {msg}\n")
