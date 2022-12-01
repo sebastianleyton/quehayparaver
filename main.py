@@ -22,6 +22,24 @@ def hello_world():
     return render_template('index.html', pelis_lifecinema=pelis_lifecinema)
     # return render_template('index.html')
 
+
+
+@app.route('/movies/titles')
+def get_all_movies():
+    # pelis_grupocine = grupocine.get_data()
+    # pelis_lifecinema = lifecinemas.get_links()
+    json_exists = os.path.exists(JSON_PATH)
+    if not json_exists:
+        pelis_lifecinema = '[]'
+    else:
+        pelis_lifecinema = get_all_movies()
+
+
+    # En realidad esto deberia convertirse en un json con ¿jsonify?
+    titles = [{'title': t['title']} for t in pelis_lifecinema]
+    return titles
+    # return render_template('index.html')
+
 def get_all_movies():
     db_conn = db.DBConnection(DB_PATH)
     movies = db_conn.get_all_movies()
