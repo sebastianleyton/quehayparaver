@@ -7,7 +7,7 @@ import datetime
 from selenium.common import NoSuchElementException
 from definitions import MOVIE_IMAGES_PATH, JSON_PATH, DB_PATH
 from entities.movies import Movie
-from scraping_helper import Scraper, download_image, minute_trim
+from scraping_helper import Scraper, download_image, normalizar_duracion
 from functions.dal.db import DBConnection
 import time
 
@@ -66,7 +66,7 @@ def scrape_data():
         descripcion = nav.extraer_texto(SELECTOR_DESCRIPTION)
 
         # Obtener duracion
-        duracion = minute_trim(nav.extraer_texto(SELECTOR_DURATION))
+        duracion = normalizar_duracion(nav.extraer_texto(SELECTOR_DURATION))
 
         # Obtener genero
         genero = nav.extraer_texto(SELECTOR_GENRE)
@@ -97,3 +97,4 @@ def scrape_data():
         movie.save()
 
     nav.cerrar_navegador()
+

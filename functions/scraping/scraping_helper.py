@@ -178,9 +178,11 @@ def normalizar_duracion(duracion_text):
             return hora * 60 + minutos
         return int(duracion_text.replace('h', '')) * 60
     elif "m" in duracion_text:
-        return int(duracion_text.replace('m', ''))
+        x = duracion_text.split('m')
+        minutos = int(x[0])
+        return minutos
     else:
-        return (duracion_text)
+        return int(duracion_text)
 
 
 def minute_trim(text):
