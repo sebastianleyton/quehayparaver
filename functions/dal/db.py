@@ -48,6 +48,11 @@ class DBConnection:
         result = self.query(query, cinema)
         return result
 
+    def get_latest_movies_title_from_cinema(self, cinema):
+        query = 'select title from movies where cinema = ?'
+        result = self.query(query, cinema)
+        return result
+
     def get_movie_by_id(self, movie_id):
         query = 'select * from movies where id = ?'
         result = self.query(query, movie_id)

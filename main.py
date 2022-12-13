@@ -8,6 +8,11 @@ from functions.dal import db
 # from functions.scraping import lifecinemas
 app = Flask(__name__)
 
+# / peliculas / grupocine
+# / peliculas / lifecinema
+# / peliculas / cinemovie
+# / peliculas / all
+
 
 @app.route('/')
 def hello_world():
@@ -23,6 +28,24 @@ def hello_world():
     # return render_template('index.html')
 
 
+
+@app.route('/movies/grupocine')
+def get_all_movies_grupocine():
+    # pelis_grupocine = grupocine.get_data()
+    # pelis_lifecinema = lifecinemas.get_links()
+    db_conn = db.DBConnection(DB_PATH)
+    cinema = db.CinemecNames.grupocine
+    # json_exists = os.path.exists(JSON_PATH)
+    # if not json_exists:
+    #     pelis_grupocine = '[]'
+    # else:
+    pelis_grupocine = db_conn.get_latest_movies_title_from_cinema(cinema)
+
+
+    # En realidad esto deberia convertirse en un json con ¿jsonify?
+    titles = [{'title': t['title']} for t in pelis_grupocine]
+    return titles
+    # return render_template('index.html')
 
 @app.route('/movies/titles')
 def get_all_movies():
