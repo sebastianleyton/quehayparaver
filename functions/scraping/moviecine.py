@@ -4,7 +4,7 @@ import requests
 from selenium.common import NoSuchElementException
 from definitions import MOVIE_IMAGES_PATH, JSON_PATH, DB_LIB_PATH, DB_PATH
 from entities.movies import Movie
-from scraping_helper import Scraper, normalizar_duracion, download_image
+from scraping_helper import Scraper, download_image
 from functions.dal.db import DBConnection, CinemecNames
 import datetime
 import uuid
@@ -61,7 +61,7 @@ def scrape_data():
 
         # Obtener Duracion
         d1 = nav.extraer_texto(SELECTOR_DURATION)
-        duracion = normalizar_duracion(d1)
+        duracion = nav.normalizar_duracion(d1)
 
         # Obtener Genero
         genero = nav.extraer_texto(SELECTOR_GENERO)

@@ -168,30 +168,21 @@ class Scraper:
         self.chrome.close()
 
 
-def normalizar_duracion(duracion_text):
-    duracion_text = str(duracion_text)
-    if "h" in duracion_text:
-        if "m" in duracion_text:
-            x = duracion_text.split('h')
-            hora = int(x[0])
-            minutos = int(x[1].replace('m', ''))
-            return hora * 60 + minutos
-        return int(duracion_text.replace('h', '')) * 60
-    elif "m" in duracion_text:
-        x = duracion_text.split('m')
-        minutos = int(x[0])
-        return minutos
-    else:
-        return int(duracion_text)
-
-
-def minute_trim(text):
-    if "m" in text:
-        a = text.split("m")
-        return (a[0])
-    else:
-        return (text)
-
+    def normalizar_duracion(self, duracion_text):
+        duracion_text = str(duracion_text)
+        if "h" in duracion_text:
+            if "m" in duracion_text:
+                x = duracion_text.split('h')
+                hora = int(x[0])
+                minutos = int(x[1].replace('m', ''))
+                return hora * 60 + minutos
+            return int(duracion_text.replace('h', '')) * 60
+        elif "m" in duracion_text:
+            x = duracion_text.split('m')
+            minutos = int(x[0])
+            return minutos
+        else:
+            return int(duracion_text)
 
 def download_image(url, imagen, save_path=os.path.join(MOVIE_IMAGES_PATH)):
     # Crear timestamp para la carpeta donde se va a guardar

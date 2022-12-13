@@ -4,7 +4,7 @@ import uuid
 from selenium.common import NoSuchElementException
 from definitions import DB_PATH
 from entities.movies import Movie
-from scraping_helper import Scraper, download_image, normalizar_duracion
+from scraping_helper import Scraper, download_image
 from functions.dal.db import DBConnection, CinemecNames, create_db_from_scratch
 import time
 from scraping_helper import log
@@ -73,7 +73,7 @@ def scrape_data():
         descripcion = nav.extraer_texto(SELECTOR_DESCRIPTION)
 
         # Obtener Duracion
-        duracion = normalizar_duracion(nav.extraer_texto(SELECTOR_DURATION))
+        duracion = nav.normalizar_duracion(nav.extraer_texto(SELECTOR_DURATION))
 
         # Obtener Genero dependiendo de la pagina (Casos en que no existe el row Actores)
         if nav.extraer_texto(SELECTOR_CAST) == 'Actores:':
@@ -101,4 +101,3 @@ def scrape_data():
 
     nav.cerrar_navegador()
 
-scrape_data()
